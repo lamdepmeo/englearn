@@ -7,6 +7,13 @@ export async function POST(req: Request) {
   const prisma = new PrismaClient()
 
   try {
+    if (!process.env.JWT_SECRET) {
+      return NextResponse.json(
+        { error: 'JWT secret is not configured' },
+        { status: 500 }
+      )
+    }
+
     const { username: name, password, email } = await req.json()
 
     const salt = bcrypt.genSaltSync(10)
@@ -26,7 +33,10 @@ export async function POST(req: Request) {
       name: 'token',
       value: token,
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
     })
 
     return response
