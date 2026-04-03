@@ -6,7 +6,7 @@ import {
   useLayoutEffect,
 } from 'react'
 import { requestOpenAI } from '~/apis/openai'
-import { getSpeakToTextApi } from '~/apis/azureTTS'
+import { getSpeakToTextApi, hasSpeechRecordingSupport } from '~/apis/azureTTS'
 import { isIOS, getLocal } from '~/utils'
 import { PlusOutlined } from '@ant-design/icons'
 import { Input, Button } from 'antd'
@@ -42,6 +42,7 @@ const Content: React.FC = () => {
   const [recognizer, setRecognizer] = useState<any>({})
   const [recordName, setRecordName] = useAtom(recordNowHistoryName)
   const [openVoice, setOpenVoice] = useAtom(openVoiceAtom)
+  const isSpeechRecordingEnabled = hasSpeechRecordingSupport()
 
   // auto scroll
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -59,11 +60,16 @@ const Content: React.FC = () => {
   useEffect(() => {
     if (Object.keys(recognizer).length === 0) {
       let res = getSpeakToTextApi()
-      setRecognizer(res)
+      if (res) {
+        setRecognizer(res)
+      }
     }
   }, [recognizer])
 
   const handleRecord = () => {
+    if (!isSpeechRecordingEnabled || Object.keys(recognizer).length === 0) {
+      return
+    }
     if (!recordFlag) {
       setWaiting(true)
       recognizer.startContinuousRecognitionAsync(
@@ -225,7 +231,11 @@ const Content: React.FC = () => {
               onPressEnter={handleKeyDown}
               className='w-full flex-none md:flex-1 '
             />
-            <Button type='primary' onClick={handleRecord}>
+            <Button
+              type='primary'
+              onClick={handleRecord}
+              disabled={!isSpeechRecordingEnabled}
+            >
               {listening ? (
                 <div className='flex items-center gap-1'>
                   <span>{t('in_chat')}</span>

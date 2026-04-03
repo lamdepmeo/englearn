@@ -3,7 +3,7 @@ import { useAtom } from 'jotai'
 import { Button } from 'antd'
 import { openAiCount, voiceIdAtom } from '~/state'
 import { PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons'
-import { azureSpeechSynthesize } from '~/apis/azureTTS'
+import { azureSpeechSynthesize, hasSpeechPlaybackSupport } from '~/apis/azureTTS'
 import { isSafari } from 'react-device-detect'
 
 const PlayerBtn: React.FC<{
@@ -14,11 +14,15 @@ const PlayerBtn: React.FC<{
   const [isPlaying, setIsPlaying] = useState(false)
   const [aiCount] = useAtom(openAiCount)
   const [voiceId] = useAtom(voiceIdAtom)
+  const isSpeechPlaybackEnabled = hasSpeechPlaybackSupport()
 
   const Icon = isPlaying ? PauseCircleOutlined : PlayCircleOutlined
 
   const handlePlay = () => {
     const player = azureSpeechSynthesize(content, voiceId, setIsPlaying)
+    if (!player) {
+      return
+    }
     setAudio(player)
   }
 
@@ -49,7 +53,14 @@ const PlayerBtn: React.FC<{
     }
   }, [aiCount])
 
-  return <Button onClick={handleClick} size='small' icon={<Icon />} />
+  return (
+    <Button
+      onClick={handleClick}
+      size='small'
+      icon={<Icon />}
+      disabled={!isSpeechPlaybackEnabled}
+    />
+  )
 }
 
 export default PlayerBtn
