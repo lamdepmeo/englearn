@@ -48,6 +48,14 @@ Create your local env from `.env.example`, then add the same values in Vercel Pr
 - `OPENAI_API_PROXY` (optional)
 - `AZURE_SECRET` / `AZURE_REGION` (if using Azure Speech)
 
+Where to get these:
+
+- `JWT_SECRET`: generate your own random secret (example: `openssl rand -base64 32`).
+- `DATABASE_URL` / `DATABASE_DIRECT_URL`:
+  - If using Vercel Postgres, copy from Project → Storage → Postgres → `.env` snippet.
+  - If using Supabase/Neon/Railway, copy the connection string from that provider dashboard.
+  - Use `?sslmode=require` for production connections.
+
 ### 2) Provision a PostgreSQL database
 
 This project uses Prisma + Postgres. Make sure production DB is reachable from Vercel and TLS/SSL is enabled.
@@ -57,8 +65,11 @@ This project uses Prisma + Postgres. Make sure production DB is reachable from V
 - Install Command: `pnpm install --frozen-lockfile`
 - Build Command: `pnpm build`
 - Output setting: keep default for Next.js
+- Node.js Version: `18.x`
 
 > `pnpm build` already runs `prisma generate && next build`.
+
+If you see `ERR_INVALID_THIS` during `pnpm install`, make sure your project is using the pinned package manager/runtime from `package.json` (`pnpm@8.15.8` + Node `18.x`) and re-deploy without cache.
 
 ### 4) Run database migrations before/at first release
 
