@@ -65,11 +65,11 @@ This project uses Prisma + Postgres. Make sure production DB is reachable from V
 - Install Command: `pnpm install --frozen-lockfile`
 - Build Command: `pnpm build`
 - Output setting: keep default for Next.js
-- Node.js Version: `18.x`
+- Node.js Version: `24.x`
 
 > `pnpm build` already runs `prisma generate && next build`.
 
-If you see `ERR_INVALID_THIS` during `pnpm install`, make sure your project is using the pinned package manager/runtime from `package.json` (`pnpm@8.15.8` + Node `18.x`) and re-deploy without cache.
+If you see `ERR_INVALID_THIS` during `pnpm install`, make sure your project is using the pinned package manager/runtime from `package.json` (`pnpm@10.13.1` + Node `24.x`) and re-deploy without cache.
 
 ### 4) Run database migrations before/at first release
 
